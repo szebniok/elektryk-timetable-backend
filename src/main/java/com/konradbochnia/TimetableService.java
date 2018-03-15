@@ -30,6 +30,9 @@ public class TimetableService {
     private static final int MINUTE = SECOND * 60;
     private static final Logger LOG = LoggerFactory.getLogger(TimetableService.class);
     
+    private static final Pattern TIMETABLE_PATTERN = Pattern.compile("jsc_timetable\\.obj\\.loadVersion\\(\"([\\d]+)\"");
+    private static final Pattern SUBSTITUTIONS_PATTER = Pattern.compile("obj\\.reloadRows\\(\"\\d{4}-\\d{2}-\\d{2}\",([^)]+)\\)");
+    
     private final NotificationsService notificationService;
     private final CloseableHttpClient client;
 
@@ -48,8 +51,7 @@ public class TimetableService {
         evictClasses();
         try {
             String downloadedData = getClassesAndVersion();
-            Pattern pattern = Pattern.compile("jsc_timetable\\.obj\\.loadVersion\\(\"([\\d]+)\"");
-            Matcher matcher = pattern.matcher(downloadedData);
+            Matcher matcher = TIMETABLE_PATTERN.matcher(downloadedData);
             matcher.find();
             Optional<String> newVersion = Optional.of(matcher.group(1));
 
@@ -75,8 +77,7 @@ public class TimetableService {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         try {
             String downloadedData = getSubstitutions(tomorrow.format(DateTimeFormatter.ISO_LOCAL_DATE));
-            Pattern pattern = Pattern.compile("obj\\.reloadRows\\(\"\\d{4}-\\d{2}-\\d{2}\",([^)]+)\\)");
-            Matcher matcher = pattern.matcher(downloadedData);
+            Matcher matcher = SUBSTITUTIONS_PATTER.matcher(downloadedData);
             matcher.find();
             String newSubstitutionsData = matcher.group(1);
 
