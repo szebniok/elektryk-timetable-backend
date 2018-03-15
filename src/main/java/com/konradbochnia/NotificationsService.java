@@ -25,6 +25,12 @@ public class NotificationsService {
     private static final String REGISTER_URL = "https://iid.googleapis.com/iid/v1/%s/rel/topics/%s";
     private static final String SEND_URL = "https://fcm.googleapis.com/fcm/send";
     
+    private static final String ICON = "/icons/logo_512.png";
+    private static final Notification SUBSTITUTIONS_UPDATE_NOTIFICATION = 
+            new Notification("Nowe zastępstwa", "Sprawdź zmiany", ICON, "updates");
+    private static final Notification TIMETABLE_UPDATE_NOTIFICATION =
+            new Notification("Nowy plan lekcji", "Sprawdź zmiany", ICON, "updates");
+    
     private final Header[] HEADERS;
     private final ObjectMapper mapper = new ObjectMapper();
     
@@ -52,10 +58,17 @@ public class NotificationsService {
         }
     }
     
-    public void sendNotification(String title, String body, String subject) {
+    public void sendTimetableNotification() {
+        sendNotification(TIMETABLE_UPDATE_NOTIFICATION);
+    }
+    
+    public void sendSubstitutionsNotification() {
+        sendNotification(SUBSTITUTIONS_UPDATE_NOTIFICATION);
+    }
+    
+    private void sendNotification(Notification notification) {
         LOG.info("Sended notifications");
         
-        Notification notification = new Notification(title, body, "/icons/logo_512.png", subject);
         String json;
         try {
             json = mapper.writeValueAsString(notification);
@@ -73,4 +86,6 @@ public class NotificationsService {
             LOG.error("Failed with sending notifications", e);
         }
     }
+    
+    
 }

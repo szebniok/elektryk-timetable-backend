@@ -56,7 +56,7 @@ public class TimetableService {
             if (version.isPresent() && !version.equals(newVersion)) {
                 LOG.info("Found update");
                 
-                notificationService.sendNotification("Nowy plan lekcji", "Sprawdź zmiany", "updates");
+                notificationService.sendTimetableNotification();
                 cacheEvict();
             }
             version = newVersion;
@@ -84,7 +84,7 @@ public class TimetableService {
                     !substitutionsData.get().equals(newSubstitutionsData)) {
                 LOG.info("Changes in substitutions data");
 
-                notificationService.sendNotification("Nowe zastępstwa", "Sprawdź zmiany", "updates");
+                notificationService.sendSubstitutionsNotification();
             }
 
             substitutionsData = Optional.of(newSubstitutionsData);
