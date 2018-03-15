@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.http.NameValuePair;
@@ -37,8 +38,8 @@ public class TimetableService {
         this.client = client;
     }
     
-    private String version = null;
-    private String substitutionsData = null;
+    private Optional<String> version = Optional.empty();
+    private Optional<String> substitutionsData = Optional.empty();
     
     @Scheduled(fixedRate = 30 * MINUTE) 
     public void checkForNewVersion() {
@@ -50,9 +51,9 @@ public class TimetableService {
             Pattern pattern = Pattern.compile("jsc_timetable\\.obj\\.loadVersion\\(\"([\\d]+)\"");
             Matcher matcher = pattern.matcher(downloadedData);
             matcher.find();
-            String newVersion = matcher.group(1);
+            Optional<String> newVersion = Optional.of(matcher.group(1));
 
-            if (version != null && !version.equals(newVersion)) {
+            if (version.isPresent() && !version.equals(newVersion)) {
                 LOG.info("Found update");
                 
                 notificationService.sendNotification("Nowy plan lekcji", "Sprawdź zmiany", "updates");
@@ -79,13 +80,14 @@ public class TimetableService {
             matcher.find();
             String newSubstitutionsData = matcher.group(1);
 
-            if (substitutionsData != null && newSubstitutionsData.length() > 2 && !substitutionsData.equals(newSubstitutionsData)) {
+            if (substitutionsData.isPresent() && newSubstitutionsData.length() > 2 && 
+                    !substitutionsData.get().equals(newSubstitutionsData)) {
                 LOG.info("Changes in substitutions data");
 
                 notificationService.sendNotification("Nowe zastępstwa", "Sprawdź zmiany", "updates");
             }
 
-            substitutionsData = newSubstitutionsData;
+            substitutionsData = Optional.of(newSubstitutionsData);
         } catch (IOException e) {
             LOG.error("Error while checking for new substitutions", e);
         }
