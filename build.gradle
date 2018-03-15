@@ -1,0 +1,41 @@
+buildscript {
+	repositories {
+		maven { url 'https://repo.spring.io/libs-snapshot' }
+	}
+
+	dependencies {
+		classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RELEASE'
+	}
+}
+
+plugins {
+	id 'org.springframework.boot' version '2.0.0.RELEASE'
+}
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'io.spring.dependency-management' 
+apply plugin: 'findbugs'
+
+mainClassName = "com.konradbochnia.Application"
+
+repositories {
+	mavenCentral()
+	 maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+        compile 'org.springframework.boot:spring-boot-starter-cache:2.0.0.RELEASE'
+        compile 'org.springframework.boot:spring-boot-starter-webflux:2.0.0.RELEASE'
+        compile "org.apache.httpcomponents:httpclient:4.5"
+        compile 'com.github.ben-manes.caffeine:caffeine:2.6.2'
+        compile 'org.springframework:spring-tx:5.0.4.RELEASE'
+
+}
+
+jar {
+	baseName = "gs-gradle"
+	version = "0.1.0"
+}
