@@ -108,11 +108,9 @@ public class TimetableService {
         HttpPost httpPost = new HttpPost(URL);
         
         List<NameValuePair> params = new ArrayList<>();
+        populateWithCommonParams(params);
         params.add(new BasicNameValuePair("gadget", "MobileEdupage"));
-        params.add(new BasicNameValuePair("jscid", "gi34476"));
-        params.add(new BasicNameValuePair("gsh", "6bcf1a53"));
         params.add(new BasicNameValuePair("action", "globalReload"));
-        params.add(new BasicNameValuePair("_LJSL", "2048"));
         httpPost.setEntity(new UrlEncodedFormEntity(params));
         
         try (CloseableHttpResponse response = client.execute(httpPost)) {
@@ -125,11 +123,9 @@ public class TimetableService {
         HttpPost httpPost = new HttpPost(URL);
         
         List<NameValuePair> params = new ArrayList<>();
+        populateWithCommonParams(params);
         params.add(new BasicNameValuePair("gadget", "MobileSubstBrowser"));
-        params.add(new BasicNameValuePair("jscid", "gi34476"));
-        params.add(new BasicNameValuePair("gsh", "6bcf1a53"));
         params.add(new BasicNameValuePair("action", "date_reload"));
-        params.add(new BasicNameValuePair("_LJSL", "2048"));
         params.add(new BasicNameValuePair("date", date));
         httpPost.setEntity(new UrlEncodedFormEntity(params));
         
@@ -143,11 +139,9 @@ public class TimetableService {
         HttpPost httpPost = new HttpPost(URL);
             
         List<NameValuePair> params = new ArrayList<>();
+        populateWithCommonParams(params);
         params.add(new BasicNameValuePair("gadget", "MobileTimetableBrowser"));
-        params.add(new BasicNameValuePair("jscid", "gi34476"));
-        params.add(new BasicNameValuePair("gsh", "6bcf1a53"));
         params.add(new BasicNameValuePair("action", "reload"));
-        params.add(new BasicNameValuePair("_LJSL", "2048"));
         params.add(new BasicNameValuePair("oblast", "trieda"));
         params.add(new BasicNameValuePair("num", num));
         params.add(new BasicNameValuePair("id", id));
@@ -156,5 +150,11 @@ public class TimetableService {
         try (CloseableHttpResponse response = client.execute(httpPost)) {
             return EntityUtils.toString(response.getEntity());
         }
+    }
+    
+    private void populateWithCommonParams(List<NameValuePair> params) {
+        params.add(new BasicNameValuePair("jscid", "gi34476"));
+        params.add(new BasicNameValuePair("gsh", "6bcf1a53"));
+        params.add(new BasicNameValuePair("_LJSL", "2048"));
     }
 }
