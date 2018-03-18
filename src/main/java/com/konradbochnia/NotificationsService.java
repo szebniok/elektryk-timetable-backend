@@ -25,11 +25,10 @@ public class NotificationsService {
     private static final String REGISTER_URL = "https://iid.googleapis.com/iid/v1/%s/rel/topics/%s";
     private static final String SEND_URL = "https://fcm.googleapis.com/fcm/send";
     
-    private static final String ICON = "/icons/logo_512.png";
     private static final Notification SUBSTITUTIONS_UPDATE_NOTIFICATION = 
-            new Notification("Nowe zastępstwa", "Sprawdź zmiany", ICON, "updates");
+            new Notification("Nowe zastępstwa", "Sprawdź zmiany", "updates");
     private static final Notification TIMETABLE_UPDATE_NOTIFICATION =
-            new Notification("Nowy plan lekcji", "Sprawdź zmiany", ICON, "updates");
+            new Notification("Nowy plan lekcji", "Sprawdź zmiany", "updates");
     
     private final Header[] HEADERS;
     private final ObjectMapper mapper = new ObjectMapper();

@@ -11,6 +11,10 @@ public class Notification {
         this.to = "/topics/" + to;
     }
     
+    public Notification(String title, String body, String to) {
+        this(title, body, "/icons/logo_512.png", to);
+    }
+    
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class NotificationBody {
         private final String title;
