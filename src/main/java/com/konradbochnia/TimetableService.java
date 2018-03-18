@@ -1,6 +1,7 @@
 package com.konradbochnia;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -49,24 +50,18 @@ public class TimetableService {
         LOG.info("Checking for updates...");
         
         evictClasses();
-        try {
-            String downloadedData = getClassesAndVersion();
-            Matcher matcher = TIMETABLE_PATTERN.matcher(downloadedData);
-            matcher.find();
-            Optional<String> newVersion = Optional.of(matcher.group(1));
-
-            if (version.isPresent() && !version.equals(newVersion)) {
-                LOG.info("Found update");
-                
-                notificationService.sendTimetableNotification();
-                cacheEvict();
-            }
-            version = newVersion;
-
-            LOG.info("Latest timetable version: {}", newVersion);
-        } catch (IOException e) {
-            LOG.error("Error while checking for updates", e);
+        String downloadedData = getClassesAndVersion();
+        Matcher matcher = TIMETABLE_PATTERN.matcher(downloadedData);
+        matcher.find();
+        Optional<String> newVersion = Optional.of(matcher.group(1));
+        if (version.isPresent() && !version.equals(newVersion)) {
+            LOG.info("Found update");
+            
+            notificationService.sendTimetableNotification();
+            cacheEvict();
         }
+        version = newVersion;
+        LOG.info("Latest timetable version: {}", newVersion);
     }
     
     @Scheduled(fixedRate = 10 * MINUTE)
@@ -75,23 +70,17 @@ public class TimetableService {
         
         evictSubstitutions();
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        try {
-            String downloadedData = getSubstitutions(tomorrow.format(DateTimeFormatter.ISO_LOCAL_DATE));
-            Matcher matcher = SUBSTITUTIONS_PATTERN.matcher(downloadedData);
-            matcher.find();
-            String newSubstitutionsData = matcher.group(1);
-
-            if (substitutionsData.isPresent() && newSubstitutionsData.length() > 2 && 
-                    !substitutionsData.get().equals(newSubstitutionsData)) {
-                LOG.info("Changes in substitutions data");
-
-                notificationService.sendSubstitutionsNotification();
-            }
-
-            substitutionsData = Optional.of(newSubstitutionsData);
-        } catch (IOException e) {
-            LOG.error("Error while checking for new substitutions", e);
+        String downloadedData = getSubstitutions(tomorrow.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        Matcher matcher = SUBSTITUTIONS_PATTERN.matcher(downloadedData);
+        matcher.find();
+        String newSubstitutionsData = matcher.group(1);
+        if (substitutionsData.isPresent() && newSubstitutionsData.length() > 2 &&
+                !substitutionsData.get().equals(newSubstitutionsData)) {
+            LOG.info("Changes in substitutions data");
+            
+            notificationService.sendSubstitutionsNotification();
         }
+        substitutionsData = Optional.of(newSubstitutionsData);
     }
     
     @CacheEvict(value = {"classes", "substitutions", "lessons"}, allEntries = true)
@@ -104,7 +93,7 @@ public class TimetableService {
     private void evictSubstitutions() {}
     
     @Cacheable("classes")
-    public String getClassesAndVersion() throws IOException {
+    public String getClassesAndVersion() {
         LOG.info("Downloading the metadata");
         HttpPost httpPost = new HttpPost(URL);
         
@@ -112,15 +101,22 @@ public class TimetableService {
         populateWithCommonParams(params);
         params.add(new BasicNameValuePair("gadget", "MobileEdupage"));
         params.add(new BasicNameValuePair("action", "globalReload"));
-        httpPost.setEntity(new UrlEncodedFormEntity(params));
+        try {
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
+        } catch (UnsupportedEncodingException ex) {
+            throw new AssertionError("Default encoding isn't supported");
+        }
         
         try (CloseableHttpResponse response = client.execute(httpPost)) {
             return EntityUtils.toString(response.getEntity());
+        } catch (IOException ex) {
+            LOG.error("Problem with connection", ex);
+            throw new RuntimeException(ex);
         }
     }
     
     @Cacheable("substitutions")
-    public String getSubstitutions(String date) throws IOException {
+    public String getSubstitutions(String date) {
         LOG.info("Downloading the substitutions data for day {}", date);
         HttpPost httpPost = new HttpPost(URL);
         
@@ -129,15 +125,22 @@ public class TimetableService {
         params.add(new BasicNameValuePair("gadget", "MobileSubstBrowser"));
         params.add(new BasicNameValuePair("action", "date_reload"));
         params.add(new BasicNameValuePair("date", date));
-        httpPost.setEntity(new UrlEncodedFormEntity(params));
+        try {
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
+        } catch (UnsupportedEncodingException ex) {
+            throw new AssertionError("Default encoding isn't supported");
+        }
         
         try (CloseableHttpResponse response = client.execute(httpPost)) {
             return EntityUtils.toString(response.getEntity());
+        } catch (IOException ex) {
+            LOG.error("Problem with connection", ex);
+            throw new RuntimeException(ex);
         }
     }
 
     @Cacheable("lessons")
-    public String getLessons(String num, String id) throws IOException {
+    public String getLessons(String num, String id) {
         LOG.info("Downloading the timetable data for class id {}", id);
         HttpPost httpPost = new HttpPost(URL);
             
@@ -148,10 +151,17 @@ public class TimetableService {
         params.add(new BasicNameValuePair("oblast", "trieda"));
         params.add(new BasicNameValuePair("num", num));
         params.add(new BasicNameValuePair("id", id));
-        httpPost.setEntity(new UrlEncodedFormEntity(params));
+        try {
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
+        } catch (UnsupportedEncodingException ex) {
+            throw new AssertionError("Default encoding isn't supported");
+        }
         
         try (CloseableHttpResponse response = client.execute(httpPost)) {
             return EntityUtils.toString(response.getEntity());
+        } catch (IOException ex) {
+            LOG.error("Problem with connection", ex);
+            throw new RuntimeException(ex);
         }
     }
     

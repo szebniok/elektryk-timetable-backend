@@ -1,6 +1,5 @@
 package com.konradbochnia;
 
-import java.io.IOException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,19 +18,18 @@ public class TimetableController {
     }
     
     @GetMapping("/metadata")
-    public String versionAndClasses() throws IOException {
+    public String versionAndClasses(){
         return timetableService.getClassesAndVersion();
     }
     
     @GetMapping("/substitutions/{date}")
-    public String substitutions(@PathVariable String date) throws IOException {
+    public String substitutions(@PathVariable String date) {
         return timetableService.getSubstitutions(date);
     }
     
     @GetMapping("/lessons/{num}/{id}")
     public String lessons(@PathVariable String num, 
-                                @PathVariable String id) 
-            throws IOException {
+                          @PathVariable String id) {
         return timetableService.getLessons(num, id);
     }
 }

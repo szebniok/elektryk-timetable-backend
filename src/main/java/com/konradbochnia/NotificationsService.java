@@ -3,7 +3,6 @@ package com.konradbochnia;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.UnsupportedCharsetException;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
@@ -45,15 +44,17 @@ public class NotificationsService {
     }
     
     
-    public void subscribe(String subject, String token) throws IOException, UnsupportedEncodingException {
+    public void subscribe(String subject, String token) {
         LOG.info("Registered user");
         
         HttpPost httpPost = new HttpPost(String.format(REGISTER_URL, token, subject));
         httpPost.setHeaders(HEADERS);
         
-        
         try (CloseableHttpResponse response = client.execute(httpPost)) {
             LOG.info("status: " + response.getStatusLine().getStatusCode());
+        } catch (IOException ex) {
+            LOG.error("Problem with connection", ex);
+            throw new RuntimeException(ex);
         }
     }
     

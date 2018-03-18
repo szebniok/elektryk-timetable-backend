@@ -1,6 +1,5 @@
 package com.konradbochnia;
 
-import java.io.IOException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +16,7 @@ public class NotificationsController {
     }
     
     @PostMapping("/register")
-    public void register(@RequestBody String token) throws IOException {
+    public void register(@RequestBody String token) {
         service.subscribe("updates", token);
     }
 }
