@@ -95,54 +95,31 @@ public class TimetableService {
     @Cacheable("classes")
     public String getClassesAndVersion() {
         LOG.info("Downloading the metadata");
-        HttpPost httpPost = new HttpPost(URL);
         
         List<NameValuePair> params = new ArrayList<>();
         populateWithCommonParams(params);
         params.add(new BasicNameValuePair("gadget", "MobileEdupage"));
         params.add(new BasicNameValuePair("action", "globalReload"));
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
-        } catch (UnsupportedEncodingException ex) {
-            throw new AssertionError("Default encoding isn't supported");
-        }
         
-        try (CloseableHttpResponse response = client.execute(httpPost)) {
-            return EntityUtils.toString(response.getEntity());
-        } catch (IOException ex) {
-            LOG.error("Problem with connection", ex);
-            throw new RuntimeException(ex);
-        }
+        return sendUrlEncodedParams(params);
     }
     
     @Cacheable("substitutions")
     public String getSubstitutions(String date) {
         LOG.info("Downloading the substitutions data for day {}", date);
-        HttpPost httpPost = new HttpPost(URL);
         
         List<NameValuePair> params = new ArrayList<>();
         populateWithCommonParams(params);
         params.add(new BasicNameValuePair("gadget", "MobileSubstBrowser"));
         params.add(new BasicNameValuePair("action", "date_reload"));
         params.add(new BasicNameValuePair("date", date));
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
-        } catch (UnsupportedEncodingException ex) {
-            throw new AssertionError("Default encoding isn't supported");
-        }
         
-        try (CloseableHttpResponse response = client.execute(httpPost)) {
-            return EntityUtils.toString(response.getEntity());
-        } catch (IOException ex) {
-            LOG.error("Problem with connection", ex);
-            throw new RuntimeException(ex);
-        }
+        return sendUrlEncodedParams(params);
     }
 
     @Cacheable("lessons")
     public String getLessons(String num, String id) {
         LOG.info("Downloading the timetable data for class id {}", id);
-        HttpPost httpPost = new HttpPost(URL);
             
         List<NameValuePair> params = new ArrayList<>();
         populateWithCommonParams(params);
@@ -151,6 +128,19 @@ public class TimetableService {
         params.add(new BasicNameValuePair("oblast", "trieda"));
         params.add(new BasicNameValuePair("num", num));
         params.add(new BasicNameValuePair("id", id));
+        
+        return sendUrlEncodedParams(params);
+    }
+    
+    private void populateWithCommonParams(List<NameValuePair> params) {
+        params.add(new BasicNameValuePair("jscid", "gi34476"));
+        params.add(new BasicNameValuePair("gsh", "6bcf1a53"));
+        params.add(new BasicNameValuePair("_LJSL", "2048"));
+    }
+    
+    private String sendUrlEncodedParams(List<NameValuePair> params) {
+        HttpPost httpPost = new HttpPost(URL);
+        
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(params));
         } catch (UnsupportedEncodingException ex) {
@@ -163,11 +153,5 @@ public class TimetableService {
             LOG.error("Problem with connection", ex);
             throw new RuntimeException(ex);
         }
-    }
-    
-    private void populateWithCommonParams(List<NameValuePair> params) {
-        params.add(new BasicNameValuePair("jscid", "gi34476"));
-        params.add(new BasicNameValuePair("gsh", "6bcf1a53"));
-        params.add(new BasicNameValuePair("_LJSL", "2048"));
     }
 }
