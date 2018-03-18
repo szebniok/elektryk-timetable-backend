@@ -25,8 +25,7 @@ public class Application {
     @Bean
     Caffeine<Object, Object> caffeineCacheBuilder() {
         return Caffeine.newBuilder()
-                .maximumSize(30)
-                .expireAfterWrite(5, TimeUnit.MINUTES);
+                .maximumSize(50);
     }
     
     @Bean

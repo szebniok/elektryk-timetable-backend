@@ -105,6 +105,7 @@ public class TimetableService {
     
     @Cacheable("classes")
     public String getClassesAndVersion() throws IOException {
+        LOG.info("Downloading the metadata");
         HttpPost httpPost = new HttpPost(URL);
         
         List<NameValuePair> params = new ArrayList<>();
@@ -120,6 +121,7 @@ public class TimetableService {
     
     @Cacheable("substitutions")
     public String getSubstitutions(String date) throws IOException {
+        LOG.info("Downloading the substitutions data for day {}", date);
         HttpPost httpPost = new HttpPost(URL);
         
         List<NameValuePair> params = new ArrayList<>();
@@ -136,6 +138,7 @@ public class TimetableService {
 
     @Cacheable("lessons")
     public String getLessons(String num, String id) throws IOException {
+        LOG.info("Downloading the timetable data for class id {}", id);
         HttpPost httpPost = new HttpPost(URL);
             
         List<NameValuePair> params = new ArrayList<>();
