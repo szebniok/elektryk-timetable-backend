@@ -151,7 +151,7 @@ public class TimetableService {
             return EntityUtils.toString(response.getEntity());
         } catch (IOException ex) {
             LOG.error("Problem with connection", ex);
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
     }
 }
