@@ -54,7 +54,7 @@ public class TimetableService {
         Matcher matcher = TIMETABLE_PATTERN.matcher(downloadedData);
         matcher.find();
         Optional<String> newVersion = Optional.of(matcher.group(1));
-        if (version.isPresent() && !version.equals(newVersion)) {
+        if (!version.equals(newVersion)) {
             LOG.info("Found update");
             
             notificationService.sendTimetableNotification();
@@ -73,9 +73,9 @@ public class TimetableService {
         String downloadedData = getSubstitutions(tomorrow.format(DateTimeFormatter.ISO_LOCAL_DATE));
         Matcher matcher = SUBSTITUTIONS_PATTERN.matcher(downloadedData);
         matcher.find();
-        String newSubstitutionsData = matcher.group(1);
-        if (substitutionsData.isPresent() && newSubstitutionsData.length() > 2 &&
-                !substitutionsData.get().equals(newSubstitutionsData)) {
+        Optional<String> newSubstitutionsData = Optional.of(matcher.group(1));
+        if (!substitutionsData.equals(newSubstitutionsData) 
+                && newSubstitutionsData.get().length() > 2)  {
             LOG.info("Changes in substitutions data");
             
             notificationService.sendSubstitutionsNotification();
