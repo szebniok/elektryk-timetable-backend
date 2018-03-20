@@ -2,6 +2,7 @@ package com.konradbochnia;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -141,11 +142,7 @@ public class TimetableService {
     private String sendUrlEncodedParams(List<NameValuePair> params) {
         HttpPost httpPost = new HttpPost(URL);
         
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
-        } catch (UnsupportedEncodingException ex) {
-            throw new AssertionError("Default encoding isn't supported");
-        }
+        httpPost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
         
         try (CloseableHttpResponse response = client.execute(httpPost)) {
             return EntityUtils.toString(response.getEntity());
