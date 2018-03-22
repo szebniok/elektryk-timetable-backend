@@ -82,7 +82,7 @@ public class NotificationsService {
         httpPost.setEntity(new StringEntity(json, "UTF-8"));
         try (CloseableHttpResponse response = client.execute(httpPost)) {
             LOG.info("status: " + response.getStatusLine().getStatusCode());
-        } catch(IOException | UnsupportedCharsetException e) {
+        } catch(IOException e) {
             LOG.error("Failed with sending notifications", e);
         }
     }
