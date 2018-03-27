@@ -97,8 +97,7 @@ public class TimetableService {
     public String getClassesAndVersion() {
         LOG.info("Downloading the metadata");
         
-        List<NameValuePair> params = new ArrayList<>();
-        populateWithCommonParams(params);
+        List<NameValuePair> params = generateCommonParams();
         params.add(new BasicNameValuePair("gadget", "MobileEdupage"));
         params.add(new BasicNameValuePair("action", "globalReload"));
         
@@ -109,8 +108,7 @@ public class TimetableService {
     public String getSubstitutions(String date) {
         LOG.info("Downloading the substitutions data for day {}", date);
         
-        List<NameValuePair> params = new ArrayList<>();
-        populateWithCommonParams(params);
+        List<NameValuePair> params = generateCommonParams();
         params.add(new BasicNameValuePair("gadget", "MobileSubstBrowser"));
         params.add(new BasicNameValuePair("action", "date_reload"));
         params.add(new BasicNameValuePair("date", date));
@@ -122,8 +120,7 @@ public class TimetableService {
     public String getLessons(String num, String id) {
         LOG.info("Downloading the timetable data for class id {}", id);
             
-        List<NameValuePair> params = new ArrayList<>();
-        populateWithCommonParams(params);
+        List<NameValuePair> params = generateCommonParams();
         params.add(new BasicNameValuePair("gadget", "MobileTimetableBrowser"));
         params.add(new BasicNameValuePair("action", "reload"));
         params.add(new BasicNameValuePair("oblast", "trieda"));
@@ -133,10 +130,13 @@ public class TimetableService {
         return sendUrlEncodedParams(params);
     }
     
-    private void populateWithCommonParams(List<NameValuePair> params) {
+    private List<NameValuePair> generateCommonParams() {
+        List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("jscid", "gi34476"));
         params.add(new BasicNameValuePair("gsh", "6bcf1a53"));
         params.add(new BasicNameValuePair("_LJSL", "2048"));
+        
+        return params;
     }
     
     private String sendUrlEncodedParams(List<NameValuePair> params) {
